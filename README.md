@@ -6,6 +6,7 @@ Find new friends while driving
 Built on React Native and Firebase
 
 To take changes:
+
   git pull</br>
   cd ios && pod install
   
