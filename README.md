@@ -7,7 +7,7 @@ Built on React Native and Firebase
 
 To take changes:
 
-  git pull</br>
+  git pull origin master</br>
   cd ios && pod install
   
 To launch:
