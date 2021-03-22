@@ -16,7 +16,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faPlusSquare } from '@fortawesome/free-solid-svg-icons'
+import { faPlusSquare, faTrashAlt, faEdit} from '@fortawesome/free-solid-svg-icons'
 
 
 import Styles from './src/styles/styles'
@@ -26,7 +26,7 @@ import LandingPage from './src/pages/landingPage'
 import Home from './src/pages/home'
 import UserInfo from './src/pages/userInfo'
 
-library.add(faPlusSquare);
+library.add(faPlusSquare, faTrashAlt, faEdit);
 const Stack = createStackNavigator();
 
 //Main app component - Contains navigation stack

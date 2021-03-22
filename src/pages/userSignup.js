@@ -27,6 +27,9 @@ export default class UserSignup extends Component{
       isFocusedEmail: false,
       isFocusedPass: false,
       isFocusedConfirmPass: false,
+      emailErrorFlag: false,
+      passwordErrorFlag: false,
+      confirmPasswordErrorFlag: false,
     };
   }
 
@@ -41,42 +44,56 @@ export default class UserSignup extends Component{
   submitButtonPressed = () => {
     const { email, password, confirmPassword } = this.state
     if (email==="" || password==="" || confirmPassword===""){
+      if(email===""){
+        this.setState({emailErrorFlag: true});
+      }
+      if (password==="") {
+        this.setState({passwordErrorFlag: true});
+      }
+      if (confirmPassword==="") {
+        this.setState({confirmPasswordErrorFlag: true});
+      }
       this.setState({errorMessage: "Please fill all entry fields"})
       return;
     }
     if (!(password===confirmPassword)){
+      this.setState({passwordErrorFlag: true, confirmPasswordErrorFlag: true});
       this.setState({errorMessage: "Passwords do not match"})
       return;
     }
-    this.setState({indicator : true})
+    this.setState({indicator: true})
     db
       .auth()
       .createUserWithEmailAndPassword(email, password)
       .then(() => {
         this.indexUser()
+        this.setState({indicator: false})
         this.props.navigation.reset({
           index: 0,
           routes: [{ name: 'UserInfo' }],
         });
-        this.setState({indicator : false})})
+      })
       .catch(error => this.setState({errorMessage: error.message, indicator:false}))
   }
 
   //toggles the state of isFocused variables for text entry box highlights
   onFocusEmail = () => {
     this.setState({
+      emailErrorFlag: false,
       isFocusedEmail: !this.state.isFocusedEmail
     })
   }
 
   onFocusPass = () => {
     this.setState({
+      passwordErrorFlag: false,
       isFocusedPass: !this.state.isFocusedPass
     })
   }
 
   onFocusConfirmPass = () => {
     this.setState({
+      confirmPasswordErrorFlag: false,
       isFocusedConfirmPass: !this.state.isFocusedConfirmPass
     })
   }
@@ -94,7 +111,9 @@ export default class UserSignup extends Component{
             placeholderTextColor = "dimgrey"
             onFocus = {this.onFocusEmail}
             onBlur = {this.onFocusEmail}
-            style = {[Styles.buttonContainer, (this.state.isFocusedEmail) ? Styles.textEntryFocused : Styles.textEntry, Styles.textEntryOverlay]}
+            style = {[Styles.buttonContainer,
+              (this.state.emailErrorFlag) ? Styles.textEntryError : (this.state.isFocusedEmail) ? Styles.textEntryFocused : Styles.textEntry,
+              Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({email: text})}
           />
         </View>
@@ -106,7 +125,9 @@ export default class UserSignup extends Component{
             placeholderTextColor = "dimgrey"
             onFocus = {this.onFocusPass}
             onBlur = {this.onFocusPass}
-            style = {[Styles.buttonContainer, (this.state.isFocusedPass) ? Styles.textEntryFocused : Styles.textEntry, Styles.textEntryOverlay]}
+            style = {[Styles.buttonContainer,
+              (this.state.passwordErrorFlag) ? Styles.textEntryError : (this.state.isFocusedPass) ? Styles.textEntryFocused : Styles.textEntry,
+              Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({password: text})}
           />
         </View>
@@ -118,7 +139,9 @@ export default class UserSignup extends Component{
             placeholderTextColor = "dimgrey"
             onFocus = {this.onFocusConfirmPass}
             onBlur = {this.onFocusConfirmPass}
-            style = {[Styles.buttonContainer, (this.state.isFocusedConfirmPass) ? Styles.textEntryFocused : Styles.textEntry, Styles.textEntryOverlay]}
+            style = {[Styles.buttonContainer,
+              (this.state.confirmPasswordErrorFlag) ? Styles.textEntryError : (this.state.isFocusedConfirmPass) ? Styles.textEntryFocused : Styles.textEntry,
+              Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({confirmPassword: text})}
           />
         </View>

@@ -24,31 +24,54 @@ const windowWidth = Dimensions.get('window').width;
 const width = .65*windowWidth;
 
 const color = '#fffdf2';
-const highlight = 'green';
+const highlight = 'slateblue';
 
 const Styles = StyleSheet.create({
+  buttonContainer: {
+    elevation: 8,
+    borderRadius: 10,
+    borderColor: highlight,
+    borderWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    paddingTop: 10,
+  },
+  buttonText: {
+    fontSize: 18,
+    color: highlight,
+    fontWeight: "bold",
+    alignSelf: "center",
+    textTransform: "uppercase"
+  },
+  clearButtonContainer:{
+    backgroundColor: "transparent",
+    width: width,
+  },
+  clearButtonText: {
+    color: highlight
+  },
   container: {
     flex: 1,
     backgroundColor: color,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  userInfoContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  UserInfoEntryContainer: {
-    backgroundColor: color,
-    alignItems: 'center',
-    justifyContent: 'center',
+  errorText: {
+    color: 'red',
+    padding: 10,
+    fontWeight: 'bold',
   },
   highlight: {
     backgroundColor: highlight,
   },
-  textContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+  homeText: {
+    fontSize: 40,
+    fontWeight: '600',
+    color: highlight,
+    paddingBottom: 20
+  },
+  inlineButtonContainer: {
+    width: width/2 - (.075*width),
   },
   inlineContainer: {
     flexDirection: 'row',
@@ -63,44 +86,12 @@ const Styles = StyleSheet.create({
   screenContainer: {
     paddingBottom: 16
   },
-  homeText: {
-    fontSize: 40,
-    fontWeight: '600',
-    color: highlight,
-    paddingBottom: 20
-  },
-  buttonContainer: {
-    elevation: 8,
-    borderRadius: 10,
-    borderColor: highlight,
-    borderWidth: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    paddingTop: 10,
-  },
-  clearButtonContainer:{
-    backgroundColor: "transparent",
-    width: width,
-  },
   solidButtonContainer: {
     backgroundColor: highlight,
     width: width,
   },
   solidRedButton: {
     backgroundColor: "red",
-  },
-  inlineButtonContainer: {
-    width: width/2 - (.075*width),
-  },
-  buttonText: {
-    fontSize: 18,
-    color: highlight,
-    fontWeight: "bold",
-    alignSelf: "center",
-    textTransform: "uppercase"
-  },
-  clearButtonText: {
-    color: highlight
   },
   solidButtonText: {
     color: color,
@@ -110,10 +101,23 @@ const Styles = StyleSheet.create({
     color: 'black',
     alignSelf: "center",
   },
+  textContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
   textEntry: {
     backgroundColor: color,
     borderColor: 'black',
     borderWidth: 1,
+    borderRadius: 15,
+    width: width,
+    paddingTop: 15,
+  },
+  textEntryError: {
+    backgroundColor: color,
+    borderColor: 'red',
+    borderWidth: 2,
     borderRadius: 15,
     width: width,
     paddingTop: 15,
@@ -130,12 +134,28 @@ const Styles = StyleSheet.create({
     backgroundColor: 'lightgrey',
     opacity: .75,
   },
-  errorText: {
-    color: 'red',
-    padding: 10,
-    fontWeight: 'bold',
+  userInfoContainer: {
+    flex: 1,
+    justifyContent: 'center',
   },
-
+  UserInfoEntryContainer: {
+    backgroundColor: color,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  vehiclePadding: {
+    paddingBottom: 10,
+  },
+  vehicleTile: {
+    justifyContent: 'center',
+    elevation: 8,
+    borderRadius: 10,
+    borderColor: 'lightgrey',
+    borderWidth: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    width: width,
+  },
 
 });
 

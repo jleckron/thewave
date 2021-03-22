@@ -26,6 +26,8 @@ export default class UserLogin extends Component{
       indicator: false,
       isFocusedEmail: false,
       isFocusedPass: false,
+      emailErrorFlag: false,
+      passwordErrorFlag: false,
     };
   }
 
@@ -34,34 +36,42 @@ export default class UserLogin extends Component{
     const { email, password } = this.state
 
     if (email==="" || password===""){
+      if(email===""){
+        this.setState({emailErrorFlag: true});
+      }
+      if (password==="") {
+        this.setState({passwordErrorFlag: true});
+      }
       this.setState({errorMessage: "Please fill all entry fields"})
       return;
     }
 
-    this.setState({indicator : true})
+    this.setState({indicator: true})
     db.auth()
-      .signInWithEmailAndPassword(email,password)
+      .signInWithEmailAndPassword(email, password)
       .then(()=> {
+            this.setState({indicator: false})
             this.props.navigation.reset({
               index: 0,
               routes: [{ name: 'UserInfo' }],
             });
-            this.setState({indicator : false})
         })
       .catch(error=>{
-            this.setState({errorMessage: error.message, indicator : false})
+            this.setState({errorMessage: error.message, indicator: false})
       })
   }
 
   //toggles the state of isFocused variables for text entry box highlights
   onFocusEmail = () => {
     this.setState({
+      emailErrorFlag: false,
       isFocusedEmail: !this.state.isFocusedEmail
     })
   }
 
   onFocusPass = () => {
     this.setState({
+      passwordErrorFlag: false,
       isFocusedPass: !this.state.isFocusedPass
     })
   }
@@ -80,7 +90,9 @@ export default class UserLogin extends Component{
             placeholderTextColor = "dimgrey"
             onFocus = {this.onFocusEmail}
             onBlur = {this.onFocusEmail}
-            style = {[Styles.buttonContainer, (this.state.isFocusedEmail) ? Styles.textEntryFocused : Styles.textEntry, Styles.textEntryOverlay]}
+            style = {[Styles.buttonContainer,
+              (this.state.emailErrorFlag) ? Styles.textEntryError : (this.state.isFocusedEmail) ? Styles.textEntryFocused : Styles.textEntry,
+              Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({email: text})}
           />
         </View>
@@ -92,7 +104,9 @@ export default class UserLogin extends Component{
             placeholderTextColor = "dimgrey"
             onFocus = {this.onFocusPass}
             onBlur = {this.onFocusPass}
-            style = {[Styles.buttonContainer, (this.state.isFocusedPass) ? Styles.textEntryFocused : Styles.textEntry, Styles.textEntryOverlay]}
+            style = {[Styles.buttonContainer,
+              (this.state.passwordErrorFlag) ? Styles.textEntryError : (this.state.isFocusedPass) ? Styles.textEntryFocused : Styles.textEntry,
+              Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({password: text})}
           />
         </View>
