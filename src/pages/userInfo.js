@@ -182,9 +182,11 @@ export default class UserInfo extends Component{
     this.setState({indicator:  true})
     let index = this.state.vehicleEditIndex
     this.updateVehicle(this.state.vehicleEditID, false)
+    uid = db.auth().currentUser.uid
     this.state.vehicleList[index] = ({
       key: this.state.vehicleEditID,
       value: {
+        ownerID: uid,
         color: this.state.color,
         make: this.state.make,
         model: this.state.model,
