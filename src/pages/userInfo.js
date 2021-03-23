@@ -108,6 +108,7 @@ export default class UserInfo extends Component{
           })
           .then(() => {
             if(tempList === undefined || tempList.length === 0){
+              this.setState({indicator:  false})
               return
             }
             else{
