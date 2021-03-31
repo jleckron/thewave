@@ -6,7 +6,7 @@
 
 */
 import React, { Component } from 'react'
-import { View, Text, Button, TouchableOpacity, TextInput} from 'react-native'
+import { View, Text, TouchableOpacity, TextInput} from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay'
 
 import Styles from '../styles/styles'
@@ -49,16 +49,16 @@ export default class UserLogin extends Component{
     this.setState({indicator: true})
     db.auth()
       .signInWithEmailAndPassword(email, password)
-      .then(()=> {
-            this.setState({indicator: false})
+        .then(()=> {
+          this.setState({indicator: false})
             this.props.navigation.reset({
               index: 0,
               routes: [{ name: 'UserInfo' }],
             });
         })
-      .catch(error=>{
+        .catch(error=>{
             this.setState({errorMessage: error.message, indicator: false})
-      })
+        })
   }
 
   //toggles the state of isFocused variables for text entry box highlights
@@ -93,7 +93,7 @@ export default class UserLogin extends Component{
             style = {[Styles.buttonContainer,
               (this.state.emailErrorFlag) ? Styles.textEntryError : (this.state.isFocusedEmail) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
-            onChangeText = {text => this.setState({email: text})}
+            onChangeText = {text => this.setState({email: text.trim()})}
           />
         </View>
         <View style = {Styles.screenContainer}>
@@ -107,7 +107,7 @@ export default class UserLogin extends Component{
             style = {[Styles.buttonContainer,
               (this.state.passwordErrorFlag) ? Styles.textEntryError : (this.state.isFocusedPass) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
-            onChangeText = {text => this.setState({password: text})}
+            onChangeText = {text => this.setState({password: text.trim()})}
           />
         </View>
         <View style = {Styles.screenContainer}>
@@ -120,11 +120,11 @@ export default class UserLogin extends Component{
           <Text>
             Forgot your password?
           </Text>
-            <TouchableOpacity>
-              <Text style = {{color: 'blue'}}> Reset Password </Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={Styles.errorText}> {this.state.errorMessage} </Text>
+          <TouchableOpacity onPress = {() => this.props.navigation.navigate('PassRecover')}>
+            <Text style = {{color: 'blue'}}> Reset Password </Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={Styles.errorText}> {this.state.errorMessage} </Text>
       </View>
     );
   }

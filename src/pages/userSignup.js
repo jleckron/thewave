@@ -2,6 +2,10 @@
 
   userSignup.js handles the user signup functionality
 
+  <--- Docs for email verification:
+       https://firebase.google.com/docs/auth/web/passing-state-in-email-actions
+   --->
+
 */
 import React, { Component } from 'react'
 import { View, Text, Button, TouchableOpacity, TextInput} from 'react-native'
@@ -98,6 +102,13 @@ export default class UserSignup extends Component{
     })
   }
 
+  goLogin = () => {
+    this.props.navigation.reset({
+      index: 0,
+      routes: [{ name: 'Landing' }, {name: 'UserLogin'}],
+    });
+  }
+
   render (){
     return (
       <View style = {Styles.container}>
@@ -114,7 +125,7 @@ export default class UserSignup extends Component{
             style = {[Styles.buttonContainer,
               (this.state.emailErrorFlag) ? Styles.textEntryError : (this.state.isFocusedEmail) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
-            onChangeText = {text => this.setState({email: text})}
+            onChangeText = {text => this.setState({email: text.trim()})}
           />
         </View>
         <View style = {Styles.screenContainer}>
@@ -128,7 +139,7 @@ export default class UserSignup extends Component{
             style = {[Styles.buttonContainer,
               (this.state.passwordErrorFlag) ? Styles.textEntryError : (this.state.isFocusedPass) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
-            onChangeText = {text => this.setState({password: text})}
+            onChangeText = {text => this.setState({password: text.trim()})}
           />
         </View>
         <View style = {Styles.screenContainer}>
@@ -142,14 +153,24 @@ export default class UserSignup extends Component{
             style = {[Styles.buttonContainer,
               (this.state.confirmPasswordErrorFlag) ? Styles.textEntryError : (this.state.isFocusedConfirmPass) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
-            onChangeText = {text => this.setState({confirmPassword: text})}
+            onChangeText = {text => this.setState({confirmPassword: text.trim()})}
           />
         </View>
-        <SolidButton
-          onPress = {this.submitButtonPressed}
-          autoCapitalize = "none"
-          title = "Submit"
-        />
+        <View style = {Styles.screenContainer}>
+          <SolidButton
+            onPress = {this.submitButtonPressed}
+            autoCapitalize = "none"
+            title = "Submit"
+          />
+        </View>
+        <View style = {[Styles.textContainer, Styles.signupText]}>
+          <Text>
+            Already have an account?
+          </Text>
+          <TouchableOpacity onPress = {this.goLogin}>
+            <Text style = {{color: 'blue'}}> Login </Text>
+          </TouchableOpacity>
+        </View>
         <Text style={Styles.errorText}> {this.state.errorMessage} </Text>
       </View>
     );

@@ -60,6 +60,7 @@ const Styles = StyleSheet.create({
     color: 'red',
     padding: 10,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   highlight: {
     backgroundColor: highlight,
@@ -154,6 +155,8 @@ const Styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 10,
     paddingHorizontal: 12,
+    marginLeft: 10,
+    marginRight: 10,
     width: width,
   },
 

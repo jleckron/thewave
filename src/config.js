@@ -1,4 +1,5 @@
-import Firebase from 'firebase';
+import Firebase from 'firebase/app';
+require('firebase/database')
 const firebaseConfig = {
   apiKey: "AIzaSyCm_pOXDaPi9Z8XylfGDr7ggj5vydtuZ0s",
   authDomain: "thewave-e9864.firebaseapp.com",

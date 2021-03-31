@@ -2,20 +2,18 @@
 
     This page contains home page and initial naviagtion logic
 
-    -----> Must still implement persistence <-----
+    -----> Must still implement persistence, user reset password <-----
 
 */
 // splash screen: https://medium.com/handlebar-labs/how-to-add-a-splash-screen-to-a-react-native-app-ios-and-android-30a3cec835ae
 // persistence: https://rnfirebase.io/auth/usage
 
 import React, { Component } from 'react'
-import { View, Text, Button } from 'react-native'
-import { createAppContainer, createSwitchNavigator} from 'react-navigation'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
+import { enableScreens } from 'react-native-screens'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faPlusSquare, faTrashAlt, faEdit} from '@fortawesome/free-solid-svg-icons'
 
 
@@ -25,6 +23,10 @@ import UserSignup from './src/pages/userSignup'
 import LandingPage from './src/pages/landingPage'
 import Home from './src/pages/home'
 import UserInfo from './src/pages/userInfo'
+import PassRecover from './src/pages/passRecover'
+
+enableScreens();
+
 
 library.add(faPlusSquare, faTrashAlt, faEdit);
 const Stack = createStackNavigator();
@@ -55,6 +57,11 @@ export default class App extends Component {
            name = "UserLogin"
            component = {UserLogin}
            options = {{title: "Login"}}
+         />
+         <Stack.Screen
+           name = "PassRecover"
+           component = {PassRecover}
+           options = {{title: "Reset Password"}}
          />
          <Stack.Screen
            name = "UserSignup"

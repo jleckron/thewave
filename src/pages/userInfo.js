@@ -26,10 +26,8 @@
 
 */
 import React, { Component } from 'react'
-import { View, Text, Button, TouchableOpacity, TextInput, Alert} from 'react-native'
-import { NavigationContainer } from '@react-navigation/native'
+import { View, Text, TouchableOpacity, TextInput, Alert} from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import ImagePicker from 'react-native-image-picker'
 import Spinner from 'react-native-loading-spinner-overlay'
 
 import Styles from '../styles/styles'
@@ -92,12 +90,43 @@ export default class UserInfo extends Component{
   }
 // ---------------------------------------------------------------------------
 
+
+  //clears state in case of cancel button pressed with non-empty text fields
+  clearState = () => {
+    this.setState({
+      year: "",
+      make: "",
+      model: "",
+      submodel: "",
+      color: "",
+      description: "",
+      addVehicleFlag: false,
+      editVehicleFlag: false,
+    });
+  }
+
+//helper function to find index of a key in the vehicleList state
+  findListIndex = (key) => {
+    for(let i=0; i<this.state.vehicleList.length; i++){
+      if(this.state.vehicleList[i].key==key){
+        return i
+      }
+    }
+  }
+
+  //helper function to decide to display empty or initialized text fields in case of add or edit respectively
+  isAddorEdit = () => {
+    if(this.state.addVehicleFlag || this.state.editVehicleFlag){
+      return true
+    }
+    return false
+  }
+
 //ComponentDidMount loads the vehiclesList from firbase
 // Calls retireveVehicleData
   componentDidMount() {
     this.setState({indicator:  true})
     var tempList = []
-    var uid = db.auth().currentUser.uid
     db.auth().onAuthStateChanged((user) => {
       if(user) {
         db.database().ref('users').child(user.uid).child('registeredVehicles')
@@ -119,8 +148,7 @@ export default class UserInfo extends Component{
     })
   }
 
-  retrieveVehicleData = (tempList) => {
-    var tempIDList = tempList
+  retrieveVehicleData = (tempIDList) => {
     var tempvehicleList =[]
     for(let i=0; i<tempIDList.length; i++){
       db.database().ref('vehicles').child(tempIDList[i])
@@ -152,12 +180,12 @@ export default class UserInfo extends Component{
     var newVehicleRef = db.database().ref('vehicles').push()
     newVehicleRef.set( {
       ownerID: uid,
-      year: year,
-      make: make,
-      model: model,
-      submodel: submodel,
-      color: color,
-      description: description,
+      year: year.trim().split(/ +/).join(" "),
+      make: make.trim().split(/ +/).join(" "),
+      model: model.trim().split(/ +/).join(" "),
+      submodel: submodel.trim().split(/ +/).join(" "),
+      color: color.trim().split(/ +/).join(" "),
+      description: description.trim().split(/ +/).join(" "),
     })
       .then(() => {
         var regVehicleRef = db.database().ref('users').child(uid).child('registeredVehicles').push()
@@ -167,13 +195,14 @@ export default class UserInfo extends Component{
           .then(() => {
             this.updateVehicleList(newVehicleRef.key, year, make, model, submodel, color, description)
             this.setState({indicator:  false})
-            this.setVehicleFlag()
+            this.clearState()
           })
           .catch(error => this.setState({errorMessage: error.message, indicator: false}))
       })
       .catch(error => this.setState({errorMessage: error.message, indicator: false}))
   }
 
+  // Handles editing vehicle information on done button pressed in firebase and local
   editVehicleComponent = () => {
     const {year, make, model, submodel, color, description} = this.state
     if (year==="" || make==="" || model==="" || color===""){
@@ -188,12 +217,12 @@ export default class UserInfo extends Component{
       key: this.state.vehicleEditID,
       value: {
         ownerID: uid,
-        color: this.state.color,
-        make: this.state.make,
-        model: this.state.model,
-        submodel: this.state.submodel,
-        year: this.state.year,
-        description: this.state.description,
+        color: color.trim().split(/ +/).join(" "),
+        make: make.trim().split(/ +/).join(" "),
+        model: model.trim().split(/ +/).join(" "),
+        submodel: submodel.trim().split(/ +/).join(" "),
+        year: year.trim().split(/ +/).join(" "),
+        description: description.trim().split(/ +/).join(" "),
       }
     })
     this.setState({indicator:  false})
@@ -205,12 +234,12 @@ export default class UserInfo extends Component{
     this.state.vehicleList.push({
       key: key,
       value: {
-          color: color,
-          make: make,
-          model: model,
-          submodel: submodel,
-          year: year,
-          description: description,
+          color: color.trim().split(/ +/).join(" "),
+          make: make.trim().split(/ +/).join(" "),
+          model: model.trim().split(/ +/).join(" "),
+          submodel: submodel.trim().split(/ +/).join(" "),
+          year: year.trim().split(/ +/).join(" "),
+          description: description.trim().split(/ +/).join(" "),
       }
     });
   }
@@ -254,26 +283,19 @@ export default class UserInfo extends Component{
     })
   }
 
-  clearState = () => {
-    this.setState({
-      year: "",
-      make: "",
-      model: "",
-      submodel: "",
-      color: "",
-      description: "",
-      addVehicleFlag: false,
-      editVehicleFlag: false,
-    });
-  }
-
-//helper function to find a key in the vehicleList state
-  findListIndex = (key) => {
-    for(let i=0; i<this.state.vehicleList.length; i++){
-      if(this.state.vehicleList[i].key==key){
-        return i
-      }
-    }
+//--- Confirmation that the user wants to delete a vehicle
+  createDeleteAlert = (key, flag) => {
+    Alert.alert(
+      "Woah There!",
+      "Are you sure you want to delete?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        { text: "Delete", onPress: () => this.updateVehicle(key, flag) }
+      ]
+    );
   }
 
 // --- Signs current user out
@@ -290,46 +312,26 @@ export default class UserInfo extends Component{
       .catch(error => this.setState({errorMessage: error.message}))
   }
 
-//--- Confirmation that the user wants to delete a vehicle
-  createDeleteAlert = (key, flag) => {
-    Alert.alert(
-      "Woah There!",
-      "Are you sure you want to delete?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        { text: "Delete", onPress: () => this.updateVehicle(key, flag) }
-      ]
-    );
-  }
-
-  isAddorEdit = () => {
-    if(this.state.addVehicleFlag || this.state.editVehicleFlag){
-      return true
-    }
-    return false
-  }
 
 
 // --- Map function for listing elements in vehicleList state
   renderVehicles() {
-    return this.state.vehicleList.map((item, index) =>
-    <View style={Styles.vehiclePadding}>
-      <View style={Styles.textContainer}>
-      <DeleteButton onPress = {() => this.createDeleteAlert(item.key, true)}/>
-        <TouchableOpacity onPress={() => this.editVehicleFlag(item.key)}>
-          <View style={Styles.vehicleTile}>
-            <Text key={index}>
-            {item.value.year}{" "}
-            {item.value.make}{" "}
-            {item.value.model}{" "}
-            {item.value.submodel}{(item.value.submodel==="") ? "" : " "}
-            {item.value.color}</Text>
-          </View>
-        </TouchableOpacity>
-        <EditButton onPress = {() => this.editVehicleFlag(item.key)}/>
+    return this.state.vehicleList.map((item) =>
+      <View style={Styles.vehiclePadding}>
+        <View style={Styles.textContainer}>
+          <DeleteButton onPress = {() => this.createDeleteAlert(item.key, true)}/>
+          <TouchableOpacity onPress={() => this.editVehicleFlag(item.key)}>
+            <View style={Styles.vehicleTile}>
+              <Text key={item.key}>
+              {item.value.year}{" "}
+              {item.value.make}{" "}
+              {item.value.model}{" "}
+              {item.value.submodel}{(item.value.submodel==="") ? "" : " "}
+              {item.value.color}
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <EditButton onPress = {() => this.editVehicleFlag(item.key)}/>
         </View>
       </View>
     );

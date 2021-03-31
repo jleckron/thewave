@@ -5,8 +5,7 @@
 
 */
 import React, { Component } from 'react'
-import { View, Text, Button, TouchableOpacity } from 'react-native'
-import { NavigationContainer } from '@react-navigation/native'
+import { View, Text, TouchableOpacity } from 'react-native'
 
 import Styles from '../styles/styles'
 
