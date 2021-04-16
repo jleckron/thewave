@@ -20,7 +20,7 @@
     "firebase": "^8.3.1",
     "firebase-admin": "^9.5.0",
     "react": "16.13.1",
-    "react-native": "0.63.4",
+    "react-native": "^0.64.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-image-picker": "^3.2.1",
     "react-native-image-resizer": "^1.4.3",
@@ -29,7 +29,9 @@
     "react-native-safe-area-context": "^3.2.0",
     "react-native-screens": "^3.0.0",
     "react-native-svg": "^12.1.0",
-    "react-navigation": "^4.4.4"
+    "react-navigation": "^4.4.4",
+    "react-redux": "^7.2.3",
+    "redux": "^4.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.13.8",

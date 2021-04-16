@@ -53,11 +53,11 @@ export default class UserLogin extends Component{
           this.setState({indicator: false})
             this.props.navigation.reset({
               index: 0,
-              routes: [{ name: 'UserInfo' }],
+              routes: [{ name: 'Home' }],
             });
         })
         .catch(error=>{
-            this.setState({errorMessage: error.message, indicator: false})
+          this.setState({errorMessage: error.message, indicator: false})
         })
   }
 
@@ -87,10 +87,10 @@ export default class UserLogin extends Component{
           <TextInput
             autoCapitalize = "none"
             placeholder = "Email"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             onFocus = {this.onFocusEmail}
             onBlur = {this.onFocusEmail}
-            style = {[Styles.buttonContainer,
+            style = {[Styles.buttonContainer, Styles.textEntry, 
               (this.state.emailErrorFlag) ? Styles.textEntryError : (this.state.isFocusedEmail) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({email: text.trim()})}
@@ -101,10 +101,10 @@ export default class UserLogin extends Component{
             autoCapitalize = "none"
             secureTextEntry = {true}
             placeholder = "Password"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             onFocus = {this.onFocusPass}
             onBlur = {this.onFocusPass}
-            style = {[Styles.buttonContainer,
+            style = {[Styles.buttonContainer, Styles.textEntry, 
               (this.state.passwordErrorFlag) ? Styles.textEntryError : (this.state.isFocusedPass) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({password: text.trim()})}
@@ -116,12 +116,12 @@ export default class UserLogin extends Component{
             title = "Login"
           />
         </View>
-        <View style = {[Styles.textContainer, Styles.signupText]}>
-          <Text>
+        <View style = {Styles.textContainer}>
+          <Text style = {Styles.signupText}>
             Forgot your password?
           </Text>
           <TouchableOpacity onPress = {() => this.props.navigation.navigate('PassRecover')}>
-            <Text style = {{color: 'blue'}}> Reset Password </Text>
+            <Text style = {{color: Styles.buttonText.color}}> Reset Password </Text>
           </TouchableOpacity>
         </View>
         <Text style={Styles.errorText}> {this.state.errorMessage} </Text>

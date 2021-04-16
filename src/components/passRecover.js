@@ -4,7 +4,7 @@
 
 */
 import React, { Component } from 'react'
-import { View, Text, Button, TouchableOpacity, TextInput} from 'react-native'
+import { View, Text, TouchableOpacity, TextInput} from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay'
 
 import Styles from '../styles/styles'
@@ -65,15 +65,15 @@ export default class PassRecover extends Component{
         <Spinner
           visible={this.state.indicator}
         />
-        <Text>Where should we sent a password recovery email?{"\n"}</Text>
+        <Text style = {Styles.signupText}>Where should we sent a password recovery email?{"\n"}</Text>
         <View style = {Styles.screenContainer}>
           <TextInput
             autoCapitalize = "none"
             placeholder = "Email"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             onFocus = {this.onFocusEmail}
             onBlur = {this.onFocusEmail}
-            style = {[Styles.buttonContainer,
+            style = {[Styles.buttonContainer, Styles.textEntry,
               (this.state.emailErrorFlag) ? Styles.textEntryError : (this.state.isFocusedEmail) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({email: text})}

@@ -8,7 +8,7 @@
 
 */
 import React, { Component } from 'react'
-import { View, Text, Button, TouchableOpacity, TextInput} from 'react-native'
+import { View, Text, TouchableOpacity, TextInput} from 'react-native'
 import Spinner from 'react-native-loading-spinner-overlay'
 
 
@@ -74,8 +74,9 @@ export default class UserSignup extends Component{
         this.setState({indicator: false})
         this.props.navigation.reset({
           index: 0,
-          routes: [{ name: 'UserInfo' }],
-        });
+          routes: [{ name: 'Home' }],
+        })
+        this.props.navigation.navigate('UserInfo')
       })
       .catch(error => this.setState({errorMessage: error.message, indicator:false}))
   }
@@ -119,10 +120,10 @@ export default class UserSignup extends Component{
           <TextInput
             autoCapitalize = "none"
             placeholder = "Email"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             onFocus = {this.onFocusEmail}
             onBlur = {this.onFocusEmail}
-            style = {[Styles.buttonContainer,
+            style = {[Styles.buttonContainer, Styles.textEntry,
               (this.state.emailErrorFlag) ? Styles.textEntryError : (this.state.isFocusedEmail) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({email: text.trim()})}
@@ -133,10 +134,10 @@ export default class UserSignup extends Component{
             autoCapitalize = "none"
             secureTextEntry = {true}
             placeholder = "Password"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             onFocus = {this.onFocusPass}
             onBlur = {this.onFocusPass}
-            style = {[Styles.buttonContainer,
+            style = {[Styles.buttonContainer, Styles.textEntry,
               (this.state.passwordErrorFlag) ? Styles.textEntryError : (this.state.isFocusedPass) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({password: text.trim()})}
@@ -147,10 +148,11 @@ export default class UserSignup extends Component{
             autoCapitalize = "none"
             secureTextEntry = {true}
             placeholder = "Confirm Password"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
+            textInput = "white"
             onFocus = {this.onFocusConfirmPass}
             onBlur = {this.onFocusConfirmPass}
-            style = {[Styles.buttonContainer,
+            style = {[Styles.buttonContainer, Styles.textEntry, 
               (this.state.confirmPasswordErrorFlag) ? Styles.textEntryError : (this.state.isFocusedConfirmPass) ? Styles.textEntryFocused : Styles.textEntry,
               Styles.textEntryOverlay]}
             onChangeText = {text => this.setState({confirmPassword: text.trim()})}
@@ -163,12 +165,12 @@ export default class UserSignup extends Component{
             title = "Submit"
           />
         </View>
-        <View style = {[Styles.textContainer, Styles.signupText]}>
-          <Text>
+        <View style = {Styles.textContainer}>
+          <Text style = {Styles.signupText}>
             Already have an account?
           </Text>
           <TouchableOpacity onPress = {this.goLogin}>
-            <Text style = {{color: 'blue'}}> Login </Text>
+            <Text style = {{color: Styles.buttonText.color}}> Login </Text>
           </TouchableOpacity>
         </View>
         <Text style={Styles.errorText}> {this.state.errorMessage} </Text>

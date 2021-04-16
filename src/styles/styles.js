@@ -9,28 +9,25 @@ const highlight = highlight color
 
 */
 
-import { StyleSheet, Platform } from 'react-native'
-import { Dimensions } from 'react-native'
-
-import { DynamicColorIOS } from 'react-native'
+import { StyleSheet, Dimensions, DynamicColorIOS } from 'react-native'
 
 const customDynamicTextColor = DynamicColorIOS({
   dark: 'lightskyblue',
   light: 'midnightblue'
 });
 
-
 const windowWidth = Dimensions.get('window').width;
 const width = .65*windowWidth;
 
-const color = '#fffdf2';
-const highlight = 'slateblue';
+const color = '#424242';
+const highlight = '#00bfa9';
+const redShade = '#ff5454';
+const blueShade = 'lightblue';
 
 const Styles = StyleSheet.create({
   buttonContainer: {
     elevation: 8,
     borderRadius: 10,
-    borderColor: highlight,
     borderWidth: 1,
     paddingVertical: 10,
     paddingHorizontal: 12,
@@ -45,6 +42,7 @@ const Styles = StyleSheet.create({
   },
   clearButtonContainer:{
     backgroundColor: "transparent",
+    borderColor: highlight,
     width: width,
   },
   clearButtonText: {
@@ -57,7 +55,7 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
   },
   errorText: {
-    color: 'red',
+    color: redShade,
     padding: 10,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -70,6 +68,9 @@ const Styles = StyleSheet.create({
     fontWeight: '600',
     color: highlight,
     paddingBottom: 20
+  },
+  homeTextSmaller: {
+    fontSize: 32,
   },
   inlineButtonContainer: {
     width: width/2 - (.075*width),
@@ -89,17 +90,18 @@ const Styles = StyleSheet.create({
   },
   solidButtonContainer: {
     backgroundColor: highlight,
+    borderColor: "transparent",
     width: width,
   },
   solidRedButton: {
-    backgroundColor: "red",
+    backgroundColor: redShade,
   },
   solidButtonText: {
     color: color,
   },
   signupText: {
     fontSize: 14,
-    color: 'black',
+    color: 'white',
     alignSelf: "center",
   },
   textContainer: {
@@ -111,28 +113,22 @@ const Styles = StyleSheet.create({
     backgroundColor: color,
     borderColor: 'black',
     borderWidth: 1,
-    borderRadius: 15,
+    borderRadius: 5,
     width: width,
     paddingTop: 15,
+    color: 'white',
   },
   textEntryError: {
     backgroundColor: color,
-    borderColor: 'red',
+    borderColor: redShade,
     borderWidth: 2,
-    borderRadius: 15,
-    width: width,
-    paddingTop: 15,
   },
   textEntryFocused: {
     backgroundColor: color,
-    borderColor: 'blue',
-    borderWidth: 2,
-    borderRadius: 15,
-    width: width,
-    paddingTop: 15,
+    borderColor: blueShade,
   },
   textEntryOverlay: {
-    backgroundColor: 'lightgrey',
+    backgroundColor: color,
     opacity: .75,
   },
   userInfoContainer: {
@@ -159,6 +155,15 @@ const Styles = StyleSheet.create({
     marginRight: 10,
     width: width,
   },
+  vehicleTileTextContext: {
+    color: 'white',
+  },
+  vehicleTileTextTitle: {
+    fontWeight: '600',
+    fontSize: 20,
+    color: 'white',
+  },
+
 
 });
 

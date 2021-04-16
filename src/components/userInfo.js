@@ -26,19 +26,23 @@
 
 */
 import React, { Component } from 'react'
-import { View, Text, TouchableOpacity, TextInput, Alert} from 'react-native'
+import { View, Text, TouchableOpacity, TextInput, Alert, ScrollView} from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import Spinner from 'react-native-loading-spinner-overlay'
 
-import Styles from '../styles/styles'
+
+import { connect } from 'react-redux';
+import { listUpdater } from '../actions/updater'
+
+import Styles from '../styles/styles.js'
 
 import "firebase/auth"
-import { db } from '../config'
+import { db } from '../config.js'
 
-export default class UserInfo extends Component{
+class UserInfo extends Component{
   constructor(props) {
     super(props);
-
+    
     this.state = {
       name: "",
       year: "",
@@ -54,9 +58,8 @@ export default class UserInfo extends Component{
       ifFocusedMake: false,
       addVehicleFlag: false,
       editVehicleFlag: false,
-      addMediaFlag: false,
       indicator: false,
-      vehicleList: [],
+      localVehicleList: this.props.vehicleList.vehicleList,
     };
   }
 
@@ -69,19 +72,15 @@ export default class UserInfo extends Component{
     this.setState({addVehicleFlag: !this.state.addVehicleFlag});
   }
 
-  setMediaFlag = () => {
-    this.setState({addMediaFlag: !this.state.addMediaFlag});
-  }
-
   editVehicleFlag = (id) => {
     const index = this.findListIndex(id)
     this.setState({
-      year: this.state.vehicleList[index].value.year,
-      make: this.state.vehicleList[index].value.make,
-      model: this.state.vehicleList[index].value.model,
-      submodel: this.state.vehicleList[index].value.submodel,
-      color: this.state.vehicleList[index].value.color,
-      description: this.state.vehicleList[index].value.description,
+      year: this.state.localVehicleList[index].value.year,
+      make: this.state.localVehicleList[index].value.make,
+      model: this.state.localVehicleList[index].value.model,
+      submodel: this.state.localVehicleList[index].value.submodel,
+      color: this.state.localVehicleList[index].value.color,
+      description: this.state.localVehicleList[index].value.description,
       editVehicleFlag: !this.state.editVehicleFlag,
       vehicleEditID: id,
       vehicleEditIndex: index,
@@ -91,7 +90,7 @@ export default class UserInfo extends Component{
 // ---------------------------------------------------------------------------
 
 
-  //clears state in case of cancel button pressed with non-empty text fields
+  // Clears state in case of cancel button pressed with non-empty text fields
   clearState = () => {
     this.setState({
       year: "",
@@ -102,19 +101,20 @@ export default class UserInfo extends Component{
       description: "",
       addVehicleFlag: false,
       editVehicleFlag: false,
+      errorMessage: "",
     });
   }
 
-//helper function to find index of a key in the vehicleList state
+  // Helper function to find index of a key in the vehicleList state
   findListIndex = (key) => {
-    for(let i=0; i<this.state.vehicleList.length; i++){
-      if(this.state.vehicleList[i].key==key){
+    for(let i=0; i<this.state.localVehicleList.length; i++){
+      if(this.state.localVehicleList[i].key==key){
         return i
       }
     }
   }
 
-  //helper function to decide to display empty or initialized text fields in case of add or edit respectively
+  // Helper function to decide to display empty or initialized text fields in case of add or edit respectively
   isAddorEdit = () => {
     if(this.state.addVehicleFlag || this.state.editVehicleFlag){
       return true
@@ -122,53 +122,12 @@ export default class UserInfo extends Component{
     return false
   }
 
-//ComponentDidMount loads the vehiclesList from firbase
-// Calls retireveVehicleData
-  componentDidMount() {
-    this.setState({indicator:  true})
-    var tempList = []
-    db.auth().onAuthStateChanged((user) => {
-      if(user) {
-        db.database().ref('users').child(user.uid).child('registeredVehicles')
-          .once("value", function(snapshot) {
-            snapshot.forEach(function(data){
-              tempList.push(data.val().vehicleID)
-            })
-          })
-          .then(() => {
-            if(tempList === undefined || tempList.length === 0){
-              this.setState({indicator:  false})
-              return
-            }
-            else{
-              this.retrieveVehicleData(tempList);
-            }
-          })
-      }
-    })
+  // Helper function to send edited list to redux state
+  sendNewListToRedux = () => {
+    this.props.dispatch(listUpdater(this.state.localVehicleList))
   }
 
-  retrieveVehicleData = (tempIDList) => {
-    var tempvehicleList =[]
-    for(let i=0; i<tempIDList.length; i++){
-      db.database().ref('vehicles').child(tempIDList[i])
-        .once("value", function(snapshot) {
-          tempvehicleList.push({
-            key: tempIDList[i],
-            value: snapshot.val()
-          });
-        })
-        .then(() => {
-          this.setState({
-            vehicleList: tempvehicleList,
-            indicator:  false,
-          })
-        })
-    }
-  }
-//--------------------------------------------------------------------------
-
-//--- Handles updating vehicleList state and firebase database on Done button press
+  //--- Handles updating vehicleList state and firebase database on Done button press
   addVehicleComponent = () => {
     const {year, make, model, submodel, color, description} = this.state
     if (year==="" || make==="" || model==="" || color===""){
@@ -213,7 +172,7 @@ export default class UserInfo extends Component{
     let index = this.state.vehicleEditIndex
     this.updateVehicle(this.state.vehicleEditID, false)
     uid = db.auth().currentUser.uid
-    this.state.vehicleList[index] = ({
+    this.state.localVehicleList[index] = ({
       key: this.state.vehicleEditID,
       value: {
         ownerID: uid,
@@ -231,7 +190,7 @@ export default class UserInfo extends Component{
 
 
   updateVehicleList = (key, year, make, model, submodel, color, description) =>{
-    this.state.vehicleList.push({
+    this.state.localVehicleList.push({
       key: key,
       value: {
           color: color.trim().split(/ +/).join(" "),
@@ -242,6 +201,7 @@ export default class UserInfo extends Component{
           description: description.trim().split(/ +/).join(" "),
       }
     });
+    this.sendNewListToRedux()
   }
 
 /*--- Handles deleting / updating vehicle from vehicleList state and firebase
@@ -253,8 +213,8 @@ export default class UserInfo extends Component{
     var updates = {}
     if(flag==true){
       index = this.findListIndex(id)
-      this.state.vehicleList.splice(index, 1)
-      this.setState({vehicleList: this.state.vehicleList})
+      this.state.localVehicleList.splice(index, 1)
+      this.setState({localVehicleList: this.state.localVehicleList})
       updates['/vehicles/' + id] = null
     }
     else{
@@ -279,6 +239,7 @@ export default class UserInfo extends Component{
       })
     })
     .then(() => {
+      this.sendNewListToRedux()
       return db.database().ref().update(updates)
     })
   }
@@ -316,18 +277,20 @@ export default class UserInfo extends Component{
 
 // --- Map function for listing elements in vehicleList state
   renderVehicles() {
-    return this.state.vehicleList.map((item) =>
-      <View style={Styles.vehiclePadding}>
+    return this.state.localVehicleList.map((item) =>
+      <View key={item.key} style={Styles.vehiclePadding}>
         <View style={Styles.textContainer}>
           <DeleteButton onPress = {() => this.createDeleteAlert(item.key, true)}/>
           <TouchableOpacity onPress={() => this.editVehicleFlag(item.key)}>
             <View style={Styles.vehicleTile}>
-              <Text key={item.key}>
-              {item.value.year}{" "}
-              {item.value.make}{" "}
-              {item.value.model}{" "}
-              {item.value.submodel}{(item.value.submodel==="") ? "" : " "}
-              {item.value.color}
+              <Text style={Styles.vehicleTileTextTitle}>
+                {item.value.model}{" "}
+                {item.value.submodel}{(item.value.submodel==="") ? "" : " "}
+              </Text>
+              <Text style={Styles.vehicleTileTextContext}>
+                {item.value.year}{" "}
+                {item.value.make}{" "}
+                {item.value.color}
               </Text>
             </View>
           </TouchableOpacity>
@@ -339,36 +302,40 @@ export default class UserInfo extends Component{
 
   render() {
     const addVehicleFalse =
-    <View style = {Styles.container}>
-      <Text style = {Styles.homeText}>
-        What do you drive?
-      </Text>
-      <View style={Styles.screenContainer}>
-        {this.renderVehicles()}
+    <ScrollView>
+      <View style = {Styles.container}>
+        <Text style = {[Styles.homeText, Styles.homeTextSmaller]}>
+          What's in your garage?
+        </Text>
+        <View style={Styles.screenContainer}>
+          {this.renderVehicles()}
+        </View>
+        <View style = {Styles.screenContainer}>
+          <CustomIconButton
+            onPress = {this.setVehicleFlag}
+            title = "Add Vehicle"
+            icon = "plus-square"
+          />
+        </View>
+        <View style = {Styles.screenContainer}>
+          <CustomIconButton
+            onPress = {() => this.props.navigation.navigate("LinkMedia")}
+            title = "Link Socials"
+            icon = "link"
+          />
+        </View>
+        <View style = {Styles.screenContainer}>
+        <Text> {"\n"} </Text>
+          <SignOutButton
+            onPress = {this.signoutButtonPressed}
+            title = "Sign Out"
+          />
+        </View>
+        <View>
+          <Text style={Styles.errorText}> {this.state.errorMessage} </Text>
+        </View>
       </View>
-      <View style = {Styles.screenContainer}>
-        <CustomAddButton
-          onPress = {this.setVehicleFlag}
-          title = "Add a Vehicle"
-        />
-      </View>
-      <View style = {Styles.screenContainer}>
-        <SolidButton
-          onPress = {this.setMediaFlag}
-          title = "Link Social Medias"
-        />
-      </View>
-      <View style = {Styles.screenContainer}>
-      <Text> {"\n"} </Text>
-        <SignOutButton
-          onPress = {this.signoutButtonPressed}
-          title = "Sign Out"
-        />
-      </View>
-      <View>
-        <Text style={Styles.errorText}> {this.state.errorMessage} </Text>
-      </View>
-    </View>;
+    </ScrollView>;
 
     const addVehicleTrue =
     <View style = {Styles.userInfoContainer}>
@@ -379,7 +346,7 @@ export default class UserInfo extends Component{
         <View style = {Styles.screenContainer}>
           <TextInput
             placeholder = "Year (ex. 2020)"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             value={this.state.year}
             keyboardType = "numeric"
             onFocus = {this.onFocusMake}
@@ -391,7 +358,7 @@ export default class UserInfo extends Component{
         <View style = {Styles.screenContainer}>
           <TextInput
             placeholder = "Make (ex. Honda)"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             value = {this.state.make}
             onFocus = {this.onFocusMake}
             onBlur = {this.onFocusMake}
@@ -402,7 +369,7 @@ export default class UserInfo extends Component{
         <View style = {Styles.screenContainer}>
           <TextInput
             placeholder = "Model (ex. Civic)"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             value = {this.state.model}
             onFocus = {this.onFocusMake}
             onBlur = {this.onFocusMake}
@@ -413,7 +380,7 @@ export default class UserInfo extends Component{
         <View style = {Styles.screenContainer}>
           <TextInput
             placeholder = "Trim (ex. Si) (optional)"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             value = {this.state.submodel}
             onFocus = {this.onFocusMake}
             onBlur = {this.onFocusMake}
@@ -424,7 +391,7 @@ export default class UserInfo extends Component{
         <View style = {Styles.screenContainer}>
           <TextInput
             placeholder = "Color (ex. Crystal Black Pearl)"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             value = {this.state.color}
             onBlur = {this.onFocusMake}
             style = {[Styles.buttonContainer, (this.state.isFocusedMake) ? Styles.textEntryFocused : Styles.textEntry, Styles.textEntryOverlay]}
@@ -434,7 +401,7 @@ export default class UserInfo extends Component{
         <View style = {Styles.screenContainer}>
           <TextInput
             placeholder = "Description (optional)"
-            placeholderTextColor = "dimgrey"
+            placeholderTextColor = "silver"
             value = {this.state.description}
             onFocus = {this.onFocusMake}
             onBlur = {this.onFocusMake}
@@ -459,19 +426,6 @@ export default class UserInfo extends Component{
       </View>
     </View>;
 
-    const addMediaTrue =
-    <View style = {Styles.container}>
-      <Text style = {Styles.homeText}>
-        Feature Coming Soon
-      </Text>
-      <View>
-        <SolidButton
-          onPress = {this.setMediaFlag}
-          title = "Done"
-         />
-      </View>
-    </View>;
-
 
     return (
       <View style = {Styles.container}>
@@ -481,27 +435,20 @@ export default class UserInfo extends Component{
         <View>
           {(this.isAddorEdit())
             ? addVehicleTrue
-            : ((this.state.addMediaFlag)
-              ? addMediaTrue
-              : addVehicleFalse)}
+            : addVehicleFalse
+          }
         </View>
       </View>
      );
   };
 }
 
-const CustomAddButton = ({ onPress, title }) => (
- <TouchableOpacity onPress={onPress} style={[Styles.buttonContainer, Styles.solidButtonContainer]}>
-  <View style = {Styles.inlineContainer}>
-    <FontAwesomeIcon icon="plus-square" size ={26} color={Styles.container.backgroundColor}/>
-    <Text style={[Styles.buttonText, Styles.solidButtonText]}>{title}</Text>
-  </View>
- </TouchableOpacity>
-);
-
-const SolidButton = ({ onPress, title }) => (
+const CustomIconButton = ({ onPress, title, icon }) => (
   <TouchableOpacity onPress={onPress} style={[Styles.buttonContainer, Styles.solidButtonContainer]}>
-    <Text style={[Styles.buttonText, Styles.solidButtonText]}>{title}</Text>
+    <View style = {Styles.inlineContainer}>
+      {({icon}==="") ? null : <FontAwesomeIcon icon={icon} size ={26} color={Styles.container.backgroundColor}/>}
+      <Text style={[Styles.buttonText, Styles.solidButtonText]}>{title}</Text>
+    </View>
   </TouchableOpacity>
 );
 
@@ -513,17 +460,28 @@ const InlineButton = ({ onPress, title }) => (
 
 const SignOutButton = ({ onPress, title }) => (
   <TouchableOpacity onPress={onPress} style={[Styles.buttonContainer, Styles.solidButtonContainer, Styles.solidRedButton]}>
-    <Text style={[Styles.buttonText, Styles.solidButtonText]}>{title}</Text>
+    <View style = {Styles.inlineContainer}>
+      <FontAwesomeIcon icon="sign-out-alt" size ={26} color={Styles.container.backgroundColor}/>
+      <Text style={[Styles.buttonText, Styles.solidButtonText]}>{title}</Text>
+    </View>
   </TouchableOpacity>
 );
 
 const DeleteButton = ({ onPress }) => (
   <TouchableOpacity onPress={onPress}>
-    <FontAwesomeIcon icon="trash-alt" size ={20} color='red'/>
+    <FontAwesomeIcon icon="trash-alt" size ={20} color={Styles.solidRedButton.backgroundColor}/>
   </TouchableOpacity>
 );
 const EditButton = ({ onPress }) => (
   <TouchableOpacity onPress={onPress}>
-    <FontAwesomeIcon icon="edit" size ={20} color='green'/>
+    <FontAwesomeIcon icon="edit" size ={20} color='mediumseagreen'/>
   </TouchableOpacity>
 );
+
+
+const mapStateToProps = (state) => {
+  const { vehicleList } = state
+  return { vehicleList }
+};
+
+export default connect(mapStateToProps)(UserInfo);
