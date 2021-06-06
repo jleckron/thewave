@@ -15,3 +15,13 @@ To launch:
   cd thewave
   react-native run-ios
 ```
+
+
+### Current State
+- User Signup / Login
+- User Password Recovery
+- Add / Edit / Delete Vehicle Data
+
+### To Do
+- Sign into and store social media accounts
+- Work out proximity detection 
